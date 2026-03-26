@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin • ร้านอาหารโยธินบูรณะ</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700;800&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #FF6B2B;
+    --orange-light: #FFF0E8;
+    --yellow: #FFD93D;
+    --green: #2ECC71;
+    --green-light: #E8FAF0;
+    --blue: #3498DB;
+    --blue-light: #EBF5FB;
+    --red: #E74C3C;
+    --red-light: #FDEDEC;
+    --bg: #F7F5F2;
+    --card: #FFFFFF;
+    --text: #1A1208;
+    --muted: #9C8B7A;
+    --border: #EDE8E3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Prompt', 'Noto Sans Thai', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--orange);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .back-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .header h1 { font-size: 18px; font-weight: 700; color: white; }
+  .header-date { font-size: 13px; color: rgba(255,255,255,0.8); }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    background: white;
+    border-bottom: 2px solid var(--border);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tab {
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    border: none;
+    background: none;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    font-family: 'Prompt', sans-serif;
+    transition: color 0.2s;
+  }
+  .tab.active { color: var(--orange); border-bottom-color: var(--orange); }
+
+  .tab-content { display: none; padding: 16px; }
+  .tab-content.active { display: block; }
+
+  /* STAT CARDS */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .stat-label { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
+  .stat-value { font-size: 28px; font-weight: 800; }
+  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .stat-card.orange .stat-value { color: var(--orange); }
+  .stat-card.green .stat-value  { color: var(--green); }
+  .stat-card.blue .stat-value   { color: var(--blue); }
+  .stat-card.red .stat-value    { color: var(--red); }
+
+  /* SECTION CARD */
+  .section-card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .badge {
+    background: var(--orange-light);
+    color: var(--orange);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  /* ORDER ROW */
+  .order-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .order-row:last-child { border-bottom: none; }
+  .order-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--orange-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .order-info { flex: 1; min-width: 0; }
+  .order-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+  .order-meta { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .order-menus { display: flex; flex-wrap: wrap; gap: 4px; }
+  .menu-chip {
+    background: var(--orange-light);
+    color: var(--orange);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .order-time { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+
+  /* CUSTOMER ROW */
+  .customer-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .customer-row:last-child { border-bottom: none; }
+  .customer-rank {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--orange-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--orange);
+    flex-shrink: 0;
+  }
+  .customer-rank.gold   { background: #FFF8E1; color: #F9A825; }
+  .customer-rank.silver { background: #F5F5F5; color: #757575; }
+  .customer-rank.bronze { background: #FBE9E7; color: #BF360C; }
+  .customer-info { flex: 1; }
+  .customer-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .customer-meta { font-size: 12px; color: var(--muted); }
+  .stamp-pills { display: flex; gap: 4px; }
+  .stamp-pill {
+    background: var(--orange);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .stamp-pill.warn { background: var(--red); }
+
+  /* MENU CHART */
+  .menu-bar-row {
+    margin-bottom: 12px;
+  }
+  .menu-bar-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .menu-bar-name { font-size: 14px; font-weight: 600; }
+  .menu-bar-count { font-size: 14px; color: var(--muted); }
+  .menu-bar-track {
+    height: 8px;
+    background: var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .menu-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--orange), var(--yellow));
+    border-radius: 8px;
+    transition: width 0.8s;
+  }
+
+  /* SEARCH */
+  .search-box {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: 'Prompt', 'Noto Sans Thai', sans-serif;
+    background: white;
+    margin-bottom: 12px;
+  }
+  .search-box:focus { outline: none; border-color: var(--orange); }
+
+  /* REDEEM BUTTON */
+  .redeem-btn {
+    background: var(--green);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Prompt', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+  }
+  .empty-state .empty-icon { font-size: 40px; margin-bottom: 8px; }
+  .empty-state p { font-size: 14px; }
+
+  /* EXPORT */
+  .export-btn {
+    width: 100%;
+    background: var(--blue);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Prompt', sans-serif;
+    cursor: pointer;
+    margin-bottom: 8px;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1A1208;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 999;
+    transition: transform 0.3s;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <a class="back-btn" href="index.html">←</a>
+    <div>
+      <h1>แดชบอร์ดเจ้าของร้าน</h1>
+      <div class="header-date" id="header-date"></div>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('today')">วันนี้</button>
+  <button class="tab" onclick="switchTab('customers')">นักเรียน</button>
+  <button class="tab" onclick="switchTab('menu')">เมนูฮิต</button>
+  <button class="tab" onclick="switchTab('export')">Export</button>
+</div>
+
+<!-- TODAY TAB -->
+<div class="tab-content active" id="tab-today">
+  <div class="stat-grid">
+    <div class="stat-card orange">
+      <div class="stat-label">ออเดอร์วันนี้</div>
+      <div class="stat-value" id="stat-orders">0</div>
+      <div class="stat-sub">รายการ</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">รายได้โดยประมาณ</div>
+      <div class="stat-value" id="stat-revenue">0</div>
+      <div class="stat-sub">บาท (เฉลี่ย 45 บ./จาน)</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-label">นักเรียนทั้งหมด</div>
+      <div class="stat-value" id="stat-users">0</div>
+      <div class="stat-sub">ในระบบ</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">ใกล้ครบรางวัล</div>
+      <div class="stat-value" id="stat-near">0</div>
+      <div class="stat-sub">คน (8-9 แสตมป์)</div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">
+      ออเดอร์วันนี้
+      <span class="badge" id="today-badge">0</span>
+    </div>
+    <div id="today-orders-list"></div>
+  </div>
+</div>
+
+<!-- CUSTOMERS TAB -->
+<div class="tab-content" id="tab-customers">
+  <input class="search-box" id="search-input" placeholder="🔍 ค้นหาชื่อ หรือเบอร์โทร..." oninput="renderCustomers()">
+  <div class="section-card">
+    <div class="section-title">นักเรียนทั้งหมด</div>
+    <div id="customers-list"></div>
+  </div>
+</div>
+
+<!-- MENU TAB -->
+<div class="tab-content" id="tab-menu">
+  <div class="section-card">
+    <div class="section-title">เมนูยอดนิยม (ทั้งหมด)</div>
+    <div id="menu-chart"></div>
+  </div>
+  <div class="section-card">
+    <div class="section-title">เมนูวันนี้</div>
+    <div id="menu-today-chart"></div>
+  </div>
+</div>
+
+<!-- EXPORT TAB -->
+<div class="tab-content" id="tab-export">
+  <div class="section-card">
+    <div class="section-title">Export ข้อมูล</div>
+    <button class="export-btn" onclick="exportCSV('orders')">📥 Export ออเดอร์ทั้งหมด (CSV)</button>
+    <button class="export-btn" onclick="exportCSV('users')" style="background:var(--green)">👥 Export ข้อมูลนักเรียน (CSV)</button>
+  </div>
+  <div class="section-card">
+    <div class="section-title">ข้อมูลสำรอง</div>
+    <button class="export-btn" onclick="clearData()" style="background:var(--red)">🗑️ ล้างข้อมูลทั้งหมด (ระวัง!)</button>
+  </div>
+  <div class="section-card" style="background:#FFF8E1;border:1px solid #FFD93D">
+    <p style="font-size:13px;color:#7B6000;line-height:1.6">
+      💡 <strong>หมายเหตุ:</strong> ระบบนี้ใช้ Storage ในเบราว์เซอร์ เพื่อให้ข้อมูลถาวรมากขึ้น แนะนำกด Export CSV ทุกวัน แล้วบันทึกลง Google Drive
+    </p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DB_KEY = 'yothin_loyalty';
+function getDB() {
+  try { return JSON.parse(localStorage.getItem(DB_KEY)) || { users: {}, orders: [] }; }
+  catch { return { users: {}, orders: [] }; }
+}
+function saveDB(db) { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const names = ['today','customers','menu','export'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'customers') renderCustomers();
+  if (name === 'menu') renderMenuChart();
+}
+
+// ====== TODAY ======
+function renderToday() {
+  const db = getDB();
+  const today = new Date().toLocaleDateString('th-TH');
+
+  // set date
+  document.getElementById('header-date').textContent =
+    new Date().toLocaleDateString('th-TH', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+  const todayOrders = db.orders.filter(o => o.date === today);
+  document.getElementById('stat-orders').textContent = todayOrders.length;
+  document.getElementById('stat-revenue').textContent = (todayOrders.length * 45).toLocaleString();
+  document.getElementById('stat-users').textContent = Object.keys(db.users).length;
+  document.getElementById('today-badge').textContent = todayOrders.length;
+
+  const near = Object.values(db.users).filter(u => u.stamps % 10 >= 8).length;
+  document.getElementById('stat-near').textContent = near;
+
+  const list = document.getElementById('today-orders-list');
+  if (todayOrders.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">🍽️</div><p>ยังไม่มีออเดอร์วันนี้</p></div>';
+    return;
+  }
+  list.innerHTML = todayOrders.reverse().map(o => `
+    <div class="order-row">
+      <div class="order-avatar">🧑‍🎓</div>
+      <div class="order-info">
+        <div class="order-name">${esc(o.name)}</div>
+        <div class="order-meta">${esc(o.cls)} • ${esc(o.phone)}</div>
+        <div class="order-menus">${o.menus.map(m => `<span class="menu-chip">${esc(m)}</span>`).join('')}</div>
+      </div>
+      <div class="order-time">${esc(o.time || '')}</div>
+    </div>`).join('');
+}
+
+// ====== CUSTOMERS ======
+function renderCustomers() {
+  const db = getDB();
+  const q = (document.getElementById('search-input')?.value || '').toLowerCase();
+  const users = Object.values(db.users)
+    .filter(u => !q || u.name.toLowerCase().includes(q) || u.phone.includes(q))
+    .sort((a,b) => b.stamps - a.stamps);
+
+  const list = document.getElementById('customers-list');
+  if (users.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">👤</div><p>ไม่พบข้อมูล</p></div>';
+    return;
+  }
+  list.innerHTML = users.map((u, i) => {
+    const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+    const nearFree = u.stamps % 10 >= 8;
+    const canRedeem = u.stamps > 0 && u.stamps % 10 === 0;
+    return `
+    <div class="customer-row">
+      <div class="customer-rank ${rankClass}">${i+1}</div>
+      <div class="customer-info">
+        <div class="customer-name">${esc(u.name)}</div>
+        <div class="customer-meta">${esc(u.cls)} • ${esc(u.phone)} • แลกแล้ว ${u.redeemed||0} ครั้ง</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <span class="stamp-pill ${canRedeem ? 'warn' : ''}">${u.stamps % 10 || (u.stamps>0?10:0)}/10</span>
+        ${canRedeem ? `<button class="redeem-btn" onclick="redeemStamps('${u.phone}')">✓ แลกรางวัล</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function redeemStamps(phone) {
+  const db = getDB();
+  if (!db.users[phone]) return;
+  db.users[phone].stamps = 0;
+  db.users[phone].redeemed = (db.users[phone].redeemed || 0) + 1;
+  saveDB(db);
+  renderCustomers();
+  showToast('✅ แลกรางวัลสำเร็จ! รีเซ็ตแต้มแล้ว');
+}
+
+// ====== MENU CHART ======
+function renderMenuChart() {
+  const db = getDB();
+  const today = new Date().toLocaleDateString('th-TH');
+
+  const countMenus = (orders) => {
+    const counts = {};
+    orders.forEach(o => o.menus.forEach(m => counts[m] = (counts[m]||0) + 1));
+    return Object.entries(counts).sort((a,b) => b[1]-a[1]);
+  };
+
+  const allCounts = countMenus(db.orders);
+  const todayCounts = countMenus(db.orders.filter(o => o.date === today));
+  const maxAll = allCounts[0]?.[1] || 1;
+  const maxToday = todayCounts[0]?.[1] || 1;
+
+  const renderBars = (counts, max) => counts.length === 0
+    ? '<div class="empty-state"><div class="empty-icon">📊</div><p>ยังไม่มีข้อมูล</p></div>'
+    : counts.map(([name, count]) => `
+      <div class="menu-bar-row">
+        <div class="menu-bar-label">
+          <span class="menu-bar-name">${esc(name)}</span>
+          <span class="menu-bar-count">${count} ครั้ง</span>
+        </div>
+        <div class="menu-bar-track">
+          <div class="menu-bar-fill" style="width:${(count/max)*100}%"></div>
+        </div>
+      </div>`).join('');
+
+  document.getElementById('menu-chart').innerHTML = renderBars(allCounts, maxAll);
+  document.getElementById('menu-today-chart').innerHTML = renderBars(todayCounts, maxToday);
+}
+
+// ====== EXPORT CSV ======
+function exportCSV(type) {
+  const db = getDB();
+  let csv = '';
+  if (type === 'orders') {
+    csv = 'วันที่,เวลา,ชื่อ,ระดับชั้น,เบอร์โทร,เมนู\n';
+    csv += db.orders.map(o =>
+      `${o.date},${o.time||''},${o.name},${o.cls},${o.phone},"${o.menus.join(', ')}"`
+    ).join('\n');
+  } else {
+    csv = 'ชื่อ,ระดับชั้น,เบอร์โทร,แสตมป์สะสม,แลกรางวัลแล้ว\n';
+    csv += Object.values(db.users).map(u =>
+      `${u.name},${u.cls},${u.phone},${u.stamps},${u.redeemed||0}`
+    ).join('\n');
+  }
+  const bom = '\uFEFF';
+  const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `yothin_${type}_${new Date().toLocaleDateString('th-TH').replace(/\//g,'-')}.csv`;
+  a.click();
+  showToast('📥 Export สำเร็จ!');
+}
+
+function clearData() {
+  if (confirm('⚠️ ลบข้อมูลทั้งหมด? ไม่สามารถกู้คืนได้!')) {
+    localStorage.removeItem(DB_KEY);
+    showToast('🗑️ ล้างข้อมูลแล้ว');
+    setTimeout(() => location.reload(), 1000);
+  }
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+renderToday();
+</script>
+</body>
+</html>

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>แสตมป์สะสม • ร้านอาหารโยธินบูรณะ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800&family=Prompt:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #FF6B2B;
+    --orange-dark: #E5531A;
+    --orange-light: #FFF0E8;
+    --yellow: #FFD93D;
+    --green: #2ECC71;
+    --red: #E74C3C;
+    --bg: #FFF8F3;
+    --card: #FFFFFF;
+    --text: #1A1208;
+    --muted: #9C8B7A;
+    --border: #F0E6DC;
+    --stamp-empty: #F5EDE5;
+    --stamp-filled: #FF6B2B;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Prompt', 'Noto Sans Thai', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; min-height: 100vh; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* ===== SCREEN 1: WELCOME ===== */
+  #screen-welcome {
+    background: linear-gradient(160deg, #FF6B2B 0%, #FF9A5C 50%, #FFD93D 100%);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #screen-welcome::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+  }
+  #screen-welcome::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -40px;
+    width: 260px; height: 260px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+
+  .welcome-emoji {
+    font-size: 72px;
+    margin-bottom: 12px;
+    display: block;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  .welcome-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: white;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  .welcome-sub {
+    font-size: 15px;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 40px;
+  }
+
+  .btn-primary {
+    background: white;
+    color: var(--orange);
+    border: none;
+    padding: 16px 40px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: 'Prompt', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    transition: transform 0.15s, box-shadow 0.15s;
+    z-index: 1;
+    position: relative;
+  }
+
+  .btn-primary:active { transform: scale(0.96); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+  .welcome-note {
+    margin-top: 24px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    z-index: 1;
+    position: relative;
+  }
+
+  /* ===== SCREEN 2: REGISTER ===== */
+  #screen-register {
+    background: var(--bg);
+  }
+
+  .top-bar {
+    background: var(--orange);
+    padding: 20px 20px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .back-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .top-bar-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+  }
+
+  .form-body {
+    padding: 24px 20px;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .form-section {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  label span.req { color: var(--red); margin-left: 3px; }
+
+  input[type="text"], input[type="tel"], select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    font-size: 16px;
+    font-family: 'Prompt', 'Noto Sans Thai', sans-serif;
+    background: white;
+    color: var(--text);
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--orange);
+  }
+
+  .select-wrap {
+    position: relative;
+  }
+  .select-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 16px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
+    font-size: 18px;
+  }
+
+  /* Menu checkboxes */
+  .menu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .menu-item {
+    position: relative;
+  }
+
+  .menu-item input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+
+  .menu-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 10px;
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    min-height: 80px;
+  }
+
+  .menu-label .menu-emoji { font-size: 26px; margin-bottom: 5px; }
+  .menu-label .menu-name { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; }
+
+  .menu-item input:checked + .menu-label {
+    border-color: var(--orange);
+    background: var(--orange-light);
+  }
+
+  .menu-item input:checked + .menu-label .menu-name { color: var(--orange-dark); }
+
+  .btn-submit {
+    width: 100%;
+    background: var(--orange);
+    color: white;
+    border: none;
+    padding: 18px;
+    border-radius: 16px;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: 'Prompt', sans-serif;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: background 0.15s, transform 0.1s;
+    box-shadow: 0 6px 20px rgba(255,107,43,0.4);
+  }
+
+  .btn-submit:active { transform: scale(0.98); }
+  .btn-submit:disabled { background: var(--muted); box-shadow: none; }
+
+  /* ===== SCREEN 3: STAMP CARD ===== */
+  #screen-stamp {
+    background: var(--bg);
+  }
+
+  .stamp-header {
+    background: var(--orange);
+    padding: 24px 20px 30px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stamp-header::after {
+    content: '';
+    position: absolute;
+    bottom: -16px; left: 0; right: 0;
+    height: 32px;
+    background: var(--bg);
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  }
+
+  .user-name-display {
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 4px;
+  }
+  .user-greeting {
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 4px;
+  }
+  .user-class {
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+  }
+
+  .stamp-body {
+    padding: 20px;
+    flex: 1;
+  }
+
+  .stamp-card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 16px;
+  }
+
+  .stamp-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .stamp-count-big {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--orange);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stamp-count-sub {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .progress-bar {
+    height: 10px;
+    background: var(--stamp-empty);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--orange), var(--yellow));
+    border-radius: 10px;
+    transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .progress-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  /* stamp grid */
+  .stamp-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  .stamp-dot {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--stamp-empty);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .stamp-dot.filled {
+    background: var(--orange);
+    animation: stamp-pop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  .stamp-dot.filled::after {
+    content: '🍽️';
+    font-size: 16px;
+  }
+
+  .stamp-dot.empty::after {
+    content: '○';
+    font-size: 20px;
+    color: #CCC;
+  }
+
+  @keyframes stamp-pop {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); }
+  }
+
+  /* Today's menu */
+  .today-card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 16px;
+  }
+
+  .today-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .today-menu-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .menu-chip {
+    background: var(--orange-light);
+    color: var(--orange-dark);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* reward banner */
+  .reward-banner {
+    background: linear-gradient(135deg, #FFD93D, #FF6B2B);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    display: none;
+    margin-bottom: 16px;
+  }
+
+  .reward-banner.show { display: block; animation: fadeInUp 0.5s ease; }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reward-banner p:first-child { font-size: 32px; }
+  .reward-banner p:last-child { font-size: 15px; font-weight: 700; color: white; margin-top: 6px; }
+
+  .btn-again {
+    width: 100%;
+    background: var(--orange);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Prompt', sans-serif;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  /* ===== ADMIN LINK ===== */
+  .admin-link {
+    text-align: center;
+    padding: 16px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .admin-link a { color: var(--orange); text-decoration: none; }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1A1208;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 999;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1: WELCOME -->
+<div id="screen-welcome" class="screen active">
+  <span class="welcome-emoji">🍽️</span>
+  <h1 class="welcome-title">สะสมแต้ม<br>รับฟรี!</h1>
+  <p class="welcome-sub">ครบ 10 จาน รับฟรี 1 จาน<br>ร้านอาหารโรงเรียนโยธินบูรณะ</p>
+  <button class="btn-primary" onclick="goTo('screen-register')">เริ่มสะสมแต้ม →</button>
+  <p class="welcome-note">สำหรับนักเรียนโรงเรียนโยธินบูรณะเท่านั้น</p>
+</div>
+
+<!-- SCREEN 2: REGISTER + ORDER -->
+<div id="screen-register" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="goTo('screen-welcome')">←</button>
+    <div class="top-bar-title">บันทึกการสั่งอาหาร</div>
+  </div>
+  <div class="form-body">
+    <div class="form-section">
+      <label>ชื่อ-นามสกุล <span class="req">*</span></label>
+      <input type="text" id="inp-name" placeholder="เช่น สมชาย ใจดี" autocomplete="name">
+    </div>
+    <div class="form-section">
+      <label>ระดับชั้น <span class="req">*</span></label>
+      <div class="select-wrap">
+        <select id="inp-class">
+          <option value="">— เลือกระดับชั้น —</option>
+          <option>ม.1</option><option>ม.2</option><option>ม.3</option>
+          <option>ม.4</option><option>ม.5</option><option>ม.6</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-section">
+      <label>เบอร์มือถือ <span class="req">*</span></label>
+      <input type="tel" id="inp-phone" placeholder="0812345678" maxlength="10" inputmode="numeric">
+    </div>
+    <div class="form-section">
+      <label>เมนูที่สั่งวันนี้ <span class="req">*</span></label>
+      <div class="menu-grid">
+        <div class="menu-item">
+          <input type="checkbox" id="m1" value="กระเพาหมูสับ">
+          <label class="menu-label" for="m1">
+            <span class="menu-emoji">🐷</span>
+            <span class="menu-name">กระเพาหมูสับ</span>
+          </label>
+        </div>
+        <div class="menu-item">
+          <input type="checkbox" id="m2" value="กระเพาเนื้อ">
+          <label class="menu-label" for="m2">
+            <span class="menu-emoji">🥩</span>
+            <span class="menu-name">กระเพาเนื้อ</span>
+          </label>
+        </div>
+        <div class="menu-item">
+          <input type="checkbox" id="m3" value="กระเพาไก่">
+          <label class="menu-label" for="m3">
+            <span class="menu-emoji">🐔</span>
+            <span class="menu-name">กระเพาไก่</span>
+          </label>
+        </div>
+        <div class="menu-item">
+          <input type="checkbox" id="m4" value="หมูทอด">
+          <label class="menu-label" for="m4">
+            <span class="menu-emoji">🍖</span>
+            <span class="menu-name">หมูทอด</span>
+          </label>
+        </div>
+        <div class="menu-item">
+          <input type="checkbox" id="m5" value="ไก่ทอด">
+          <label class="menu-label" for="m5">
+            <span class="menu-emoji">🍗</span>
+            <span class="menu-name">ไก่ทอด</span>
+          </label>
+        </div>
+        <div class="menu-item">
+          <input type="checkbox" id="m6" value="ไข่ดาว">
+          <label class="menu-label" for="m6">
+            <span class="menu-emoji">🍳</span>
+            <span class="menu-name">ไข่ดาว</span>
+          </label>
+        </div>
+        <div class="menu-item">
+          <input type="checkbox" id="m7" value="ไข่เจียว">
+          <label class="menu-label" for="m7">
+            <span class="menu-emoji">🥚</span>
+            <span class="menu-name">ไข่เจียว</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <button class="btn-submit" id="btn-submit" onclick="submitOrder()">บันทึก + รับแสตมป์ 🎉</button>
+    <div class="admin-link">เจ้าของร้าน? <a href="admin.html">เข้าสู่ระบบ Admin →</a></div>
+  </div>
+</div>
+
+<!-- SCREEN 3: STAMP CARD -->
+<div id="screen-stamp" class="screen">
+  <div class="stamp-header">
+    <div class="user-name-display">สวัสดี!</div>
+    <div class="user-greeting" id="disp-name">—</div>
+    <div class="user-class" id="disp-class">—</div>
+  </div>
+  <div class="stamp-body">
+    <!-- Reward banner (shows when >= 10) -->
+    <div class="reward-banner" id="reward-banner">
+      <p>🎉🎊🎁</p>
+      <p>ครบ 10 แสตมป์แล้ว!<br>แจ้งพนักงานรับอาหารฟรี 1 จานได้เลย!</p>
+    </div>
+
+    <div class="stamp-card">
+      <div class="stamp-card-title">แสตมป์สะสม</div>
+      <div class="stamp-count-big" id="disp-count">0</div>
+      <div class="stamp-count-sub">จาก 10 แสตมป์</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <div class="progress-label" id="progress-label">อีก 10 แสตมป์</div>
+      <div class="stamp-grid" id="stamp-grid"></div>
+    </div>
+
+    <div class="today-card">
+      <div class="today-title">วันนี้สั่ง</div>
+      <div class="today-menu-chips" id="today-chips"></div>
+    </div>
+
+    <button class="btn-again" onclick="goTo('screen-register')">+ บันทึกวันถัดไป</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ====== STORAGE ======
+const DB_KEY = 'yothin_loyalty';
+
+function getDB() {
+  try { return JSON.parse(localStorage.getItem(DB_KEY)) || { users: {}, orders: [] }; }
+  catch { return { users: {}, orders: [] }; }
+}
+
+function saveDB(db) {
+  localStorage.setItem(DB_KEY, JSON.stringify(db));
+}
+
+// ====== NAVIGATION ======
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ====== TOAST ======
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ====== SUBMIT ORDER ======
+function submitOrder() {
+  const name = document.getElementById('inp-name').value.trim();
+  const cls  = document.getElementById('inp-class').value;
+  const phone = document.getElementById('inp-phone').value.trim();
+  const menus = [...document.querySelectorAll('.menu-item input:checked')].map(c => c.value);
+
+  if (!name) { showToast('⚠️ กรุณากรอกชื่อ-นามสกุล'); return; }
+  if (!cls)  { showToast('⚠️ กรุณาเลือกระดับชั้น'); return; }
+  if (!phone || phone.length < 9) { showToast('⚠️ กรุณากรอกเบอร์มือถือ'); return; }
+  if (menus.length === 0) { showToast('⚠️ กรุณาเลือกเมนูอย่างน้อย 1 อย่าง'); return; }
+
+  const db = getDB();
+  const key = phone; // use phone as unique key
+
+  // Upsert user
+  if (!db.users[key]) {
+    db.users[key] = { name, cls, phone, stamps: 0, redeemed: 0 };
+  } else {
+    db.users[key].name = name;
+    db.users[key].cls = cls;
+  }
+
+  // Check: already ordered today?
+  const today = new Date().toLocaleDateString('th-TH');
+  const alreadyToday = db.orders.some(o => o.phone === phone && o.date === today);
+  if (alreadyToday) {
+    showToast('✅ บันทึกสำเร็จแล้ววันนี้!');
+    showStampScreen(db.users[key], menus);
+    return;
+  }
+
+  // Add order + stamp
+  db.orders.push({ phone, name, cls, menus, date: today, time: new Date().toLocaleTimeString('th-TH') });
+  db.users[key].stamps += 1;
+
+  saveDB(db);
+  showStampScreen(db.users[key], menus);
+}
+
+// ====== SHOW STAMP SCREEN ======
+function showStampScreen(user, menus) {
+  document.getElementById('disp-name').textContent = user.name;
+  document.getElementById('disp-class').textContent = user.cls + ' • เบอร์: ' + user.phone;
+
+  const stamps = user.stamps % 10 || (user.stamps > 0 && user.stamps % 10 === 0 ? 10 : 0);
+  const displayStamps = user.stamps % 10 === 0 && user.stamps > 0 ? 10 : user.stamps % 10;
+
+  document.getElementById('disp-count').textContent = displayStamps;
+  const pct = (displayStamps / 10) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  const left = 10 - displayStamps;
+  document.getElementById('progress-label').textContent = left > 0 ? `อีก ${left} แสตมป์ = ฟรี 1 จาน` : '🎉 ครบแล้ว! รับรางวัลได้เลย';
+
+  // Stamp dots
+  const grid = document.getElementById('stamp-grid');
+  grid.innerHTML = '';
+  for (let i = 0; i < 10; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'stamp-dot ' + (i < displayStamps ? 'filled' : 'empty');
+    if (i < displayStamps) dot.style.animationDelay = (i * 0.05) + 's';
+    grid.appendChild(dot);
+  }
+
+  // Today's menu
+  const chips = document.getElementById('today-chips');
+  chips.innerHTML = menus.map(m => `<span class="menu-chip">${m}</span>`).join('');
+
+  // Reward banner
+  const banner = document.getElementById('reward-banner');
+  if (user.stamps > 0 && user.stamps % 10 === 0) {
+    banner.classList.add('show');
+  } else {
+    banner.classList.remove('show');
+  }
+
+  goTo('screen-stamp');
+  showToast('🎉 บันทึกสำเร็จ! +1 แสตมป์');
+}
+</script>
+</body>
+</html>
